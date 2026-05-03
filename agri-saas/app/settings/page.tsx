@@ -1,3 +1,6 @@
+import { NotificationSettings } from "../../components/NotificationSettings";
+import { SubscriptionManager } from "../../components/SubscriptionManager";
+
 export default function SettingsPage() {
   return (
     <div>
@@ -7,19 +10,11 @@ export default function SettingsPage() {
       </section>
 
       <section className="section">
-        <div className="card">
-          <strong>Subscription</strong>
-          <p>Current plan: Premium</p>
-          <button className="primary">Manage subscription</button>
-        </div>
+        <SubscriptionManager />
       </section>
 
       <section className="section">
-        <div className="card">
-          <strong>Notifications</strong>
-          <p>Receive updates for irrigation, harvest, and inventory alerts.</p>
-          <button className="primary">Edit notifications</button>
-        </div>
+        <NotificationSettings />
       </section>
     </div>
   );

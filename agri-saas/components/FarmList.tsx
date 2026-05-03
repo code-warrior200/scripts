@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Farm = {
   id: string;
   name: string;
@@ -15,15 +17,25 @@ export function FarmList({ farms }: { farms: Farm[] }) {
           <th>Region</th>
           <th>Crop count</th>
           <th>Status</th>
+          <th>Details</th>
         </tr>
       </thead>
       <tbody>
         {farms.map((farm) => (
           <tr key={farm.id}>
-            <td>{farm.name}</td>
+            <td>
+              <Link className="table-link" href={`/farms/${farm.id}`}>
+                {farm.name}
+              </Link>
+            </td>
             <td>{farm.region}</td>
             <td>{farm.crops.length}</td>
             <td>{farm.status}</td>
+            <td>
+              <Link className="table-action" href={`/farms/${farm.id}`}>
+                View details
+              </Link>
+            </td>
           </tr>
         ))}
       </tbody>
