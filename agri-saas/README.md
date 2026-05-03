@@ -6,13 +6,17 @@ A Next.js / React prototype for an agriculture SaaS dashboard.
 
 1. Open a terminal in `scripts/agri-saas`
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
 3. Start the development server:
+
    ```bash
    npm run dev
    ```
+
 4. Open `http://localhost:3000`
 
 ## What is included
