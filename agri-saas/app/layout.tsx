@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
-import { Sidebar } from "../components/Sidebar";
-import { CustomerAssistant } from "../components/CustomerAssistant";
+import { AppShell } from "../components/AppShell";
 
 export const metadata: Metadata = {
   title: "AgriSaaS",
@@ -13,11 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <div className="app-shell">
-          <Sidebar />
-          <main className="content">{children}</main>
-        </div>
-        <CustomerAssistant />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

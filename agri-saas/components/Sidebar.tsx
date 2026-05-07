@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { FiBarChart2, FiChevronLeft, FiChevronRight, FiGrid, FiHelpCircle, FiHome, FiMap, FiSettings } from "react-icons/fi";
+import { FiBarChart2, FiChevronLeft, FiChevronRight, FiGrid, FiHelpCircle, FiHome, FiLogOut, FiMap, FiSettings } from "react-icons/fi";
+import { useAuth } from "./AuthProvider";
 
 const navItems = [
   { label: "Home", href: "/", icon: FiHome, description: "Overview" },
@@ -15,6 +16,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout, user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -73,10 +75,13 @@ export function Sidebar() {
       <div className="sidebar-support">
         <FiHelpCircle className="sidebar-support-icon" aria-hidden="true" />
         <div>
-          <strong>Need help?</strong>
-          <span>Open the AI assistant for farm and crop support.</span>
+          <strong>{user?.name ?? "Farm Manager"}</strong>
+          <span>{user?.email ?? "Signed in"}</span>
         </div>
-        <Link href="/settings">Support settings</Link>
+        <button className="sidebar-logout" type="button" onClick={logout} title="Sign out">
+          <FiLogOut aria-hidden="true" />
+          <span>Sign out</span>
+        </button>
       </div>
     </aside>
   );

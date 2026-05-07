@@ -80,6 +80,191 @@ button.primary:hover {
   background: #166534;
 }
 
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    linear-gradient(135deg, rgba(22, 101, 52, 0.1), rgba(37, 99, 235, 0.08)),
+    #f4f6fb;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(31, 41, 55, 0.12);
+  padding: 28px;
+}
+
+.auth-card-wide {
+  width: min(620px, 100%);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.auth-logo {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #14532d;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.auth-brand strong,
+.auth-brand span {
+  display: block;
+}
+
+.auth-brand strong {
+  color: #111827;
+  font-size: 1.05rem;
+}
+
+.auth-brand span {
+  margin-top: 3px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.auth-heading {
+  margin-bottom: 24px;
+}
+
+.auth-heading h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.auth-heading p {
+  margin: 10px 0 0;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 8px;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.auth-input {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #6b7280;
+  padding: 0 12px;
+}
+
+.auth-input:focus-within {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.16);
+}
+
+.auth-input svg {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-input input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #111827;
+  padding: 11px 0;
+}
+
+.auth-input input::placeholder {
+  color: #9ca3af;
+}
+
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.auth-check {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px !important;
+  color: #4b5563 !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+}
+
+.auth-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #166534;
+}
+
+.auth-terms {
+  align-items: flex-start;
+}
+
+.auth-options a,
+.auth-switch a {
+  color: #166534;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-options a:hover,
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  margin: 22px 0 0;
+  color: #4b5563;
+  text-align: center;
+}
+
+.auth-loading {
+  color: #4b5563;
+  font-weight: 800;
+}
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -365,6 +550,41 @@ button.primary:hover {
   font-size: 0.9rem;
   font-weight: 800;
   text-decoration: none;
+}
+
+.sidebar-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #166534;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 9px 12px;
+}
+
+.sidebar-logout:hover {
+  background: #dcfce7;
+}
+
+.sidebar-logout svg {
+  width: 17px;
+  height: 17px;
+}
+
+.sidebar.collapsed .sidebar-logout {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+}
+
+.sidebar.collapsed .sidebar-logout span {
+  display: none;
 }
 
 .stat-value {
@@ -1129,5 +1349,23 @@ button.primary:hover {
   .assistant {
     right: 16px;
     bottom: 16px;
+  }
+
+  .auth-card {
+    padding: 22px;
+  }
+
+  .auth-heading h1 {
+    font-size: 1.65rem;
+  }
+
+  .auth-form-grid,
+  .auth-options {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-options {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
