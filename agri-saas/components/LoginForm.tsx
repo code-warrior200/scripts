@@ -4,15 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { FiLock, FiMail } from "react-icons/fi";
 import { useAuth } from "./AuthProvider";
+import { Button } from "./Button";
 
 export function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
@@ -20,11 +23,17 @@ export function LoginForm() {
 
     if (!email.trim() || !password.trim()) {
       setError("Enter your email and password.");
+      setIsSubmitting(false);
       return;
     }
 
-    login({ email, password });
-    router.replace("/dashboard");
+    try {
+      await login({ email, password });
+      router.replace("/dashboard");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Unable to sign in.");
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -55,9 +64,9 @@ export function LoginForm() {
 
       {error ? <p className="form-error">{error}</p> : null}
 
-      <button className="primary auth-submit" type="submit">
-        Sign in
-      </button>
+      <Button className="auth-submit" variant="primary" type="submit" disabled={isSubmitting} fullWidth>
+        {isSubmitting ? "Signing in..." : "Sign in"}
+      </Button>
     </form>
   );
 }

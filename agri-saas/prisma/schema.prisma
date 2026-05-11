@@ -25,6 +25,7 @@ model Organization {
   updatedAt   DateTime @updatedAt
   users       User[]
   farms       Farm[]
+  crops       Crop[]
   subscriptions Subscription[]
   invitations OrganizationInvitation[]
 }
@@ -60,6 +61,10 @@ model User {
   sessions        Session[]
   assignedTasks   Task[]         @relation("AssignedTasks")
   createdTasks    Task[]         @relation("CreatedTasks")
+  assignedActivities Activity[]   @relation("AssignedActivities")
+  createdActivities  Activity[]   @relation("CreatedActivities")
+  pestReports     PestReport[]
+  attendance      Attendance[]
   activityLogs    ActivityLog[]
   inventoryLogs   InventoryLog[]
 }
@@ -256,9 +261,9 @@ model Activity {
   cropCycleId    String?
   cropCycle      CropCycle? @relation(fields: [cropCycleId], references: [id])
   assignedToId   String?
-  assignedTo     User?    @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedTo     User?    @relation("AssignedActivities", fields: [assignedToId], references: [id])
   createdById    String
-  createdBy      User     @relation("CreatedTasks", fields: [createdById], references: [id])
+  createdBy      User     @relation("CreatedActivities", fields: [createdById], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -532,4 +537,3 @@ model Subscription {
   @@index([userId])
   @@index([organizationId])
 }
-

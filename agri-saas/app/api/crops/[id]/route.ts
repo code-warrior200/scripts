@@ -9,7 +9,7 @@ export async function GET(
     const crop = await prisma.crop.findUnique({
       where: { id: params.id },
       include: {
-        farm: true,
+        farmCrops: true,
       },
     });
 
@@ -38,12 +38,8 @@ export async function PATCH(
     const body = (await request.json()) as {
       name?: string;
       variety?: string;
-      area?: string;
-      growthStage?: string;
-      plantingDate?: string;
-      harvestWindow?: string;
-      health?: string;
-      nextAction?: string;
+      category?: string;
+      description?: string;
     };
 
     // Check if crop exists
@@ -63,15 +59,11 @@ export async function PATCH(
       data: {
         name: body.name?.trim(),
         variety: body.variety?.trim(),
-        area: body.area?.trim(),
-        growthStage: body.growthStage?.trim(),
-        plantingDate: body.plantingDate?.trim(),
-        harvestWindow: body.harvestWindow?.trim(),
-        health: body.health?.trim(),
-        nextAction: body.nextAction?.trim(),
+        category: body.category?.trim(),
+        description: body.description?.trim(),
       },
       include: {
-        farm: true,
+        farmCrops: true,
       },
     });
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "./Button";
 
 type Farm = {
   id: string;
@@ -32,9 +33,9 @@ export function FarmList({ farms }: { farms: Farm[] }) {
             <td>{farm.crops.length}</td>
             <td>{farm.status}</td>
             <td>
-              <Link className="table-action" href={`/farms/${farm.id}`}>
+              <Button variant="table" href={`/farms/${farm.id}`}>
                 View details
-              </Link>
+              </Button>
             </td>
           </tr>
         ))}

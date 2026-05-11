@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "../../components/Button";
 import { getSampleCrops } from "../../lib/data";
 
 export default function CropsPage() {
@@ -34,9 +35,9 @@ export default function CropsPage() {
                 <td>{crop.area}</td>
                 <td>{crop.nextAction}</td>
                 <td>
-                  <Link className="table-action" href={`/crops/${crop.id}`}>
+                  <Button variant="table" href={`/crops/${crop.id}`}>
                     View details
-                  </Link>
+                  </Button>
                 </td>
               </tr>
             ))}

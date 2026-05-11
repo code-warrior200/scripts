@@ -21,6 +21,7 @@ import {
   FiDollarSign
 } from "react-icons/fi";
 import { useAuth } from "./AuthProvider";
+import { Button } from "./Button";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: FiHome, description: "Overview" },
@@ -53,15 +54,15 @@ export function Sidebar() {
           </div>
         </div>
 
-        <button
-          className="sidebar-toggle"
+        <Button
+          variant="sidebar"
           type="button"
           onClick={() => setIsCollapsed((current) => !current)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? <FiChevronRight aria-hidden="true" /> : <FiChevronLeft aria-hidden="true" />}
-        </button>
+        </Button>
       </div>
 
       <nav className="sidebar-nav" aria-label="Primary navigation">
@@ -115,10 +116,10 @@ export function Sidebar() {
           <strong>{user?.name ?? "Farm Manager"}</strong>
           <span>{user?.email ?? "Signed in"}</span>
         </div>
-        <button className="sidebar-logout" type="button" onClick={logout} title="Sign out">
+        <Button variant="logout" type="button" onClick={logout} title="Sign out">
           <FiLogOut aria-hidden="true" />
           <span>Sign out</span>
-        </button>
+        </Button>
       </div>
     </aside>
   );

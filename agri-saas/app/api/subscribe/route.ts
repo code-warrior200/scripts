@@ -1,54 +1,60 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma";
+
+const VALID_PLANS = ["free", "pro", "enterprise"];
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const subscriptions = await prisma.subscription.findMany({
+      where: { userId: session.user.id, status: "active" },
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    });
+
+    return NextResponse.json({ subscription: subscriptions[0] ?? null });
+  } catch {
+    return NextResponse.json(
+      { error: "Unable to fetch subscription." },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as {
-      plan?: string;
-      userId?: string;
-    };
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    const plan = body.plan?.trim();
-    const userId = body.userId;
+    const body = (await request.json()) as { plan?: string };
+    const plan = body.plan?.trim().toLowerCase();
 
     if (!plan) {
-      return NextResponse.json(
-        { error: "Plan is required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Plan is required." }, { status: 400 });
     }
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required." },
-        { status: 400 }
-      );
+    if (!VALID_PLANS.includes(plan)) {
+      return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
-    // Verify user exists
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found." },
-        { status: 404 }
-      );
-    }
-
-    // Deactivate existing subscriptions
     await prisma.subscription.updateMany({
-      where: { userId, status: "active" },
-      data: { status: "inactive" },
+      where: { userId: session.user.id, status: "active" },
+      data: { status: "cancelled" },
     });
 
-    // Create new subscription
     const subscription = await prisma.subscription.create({
       data: {
         plan,
         status: "active",
-        userId,
+        userId: session.user.id,
       },
     });
 
@@ -61,41 +67,10 @@ export async function POST(request: Request) {
         status: subscription.status,
       },
     });
-  } catch (error) {
-    console.error("Subscription error:", error);
+  } catch {
     return NextResponse.json(
       { success: false, error: "Unable to update subscription." },
       { status: 400 }
-    );
-  }
-}
-
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required." },
-        { status: 400 }
-      );
-    }
-
-    const subscriptions = await prisma.subscription.findMany({
-      where: { userId, status: "active" },
-      orderBy: { createdAt: "desc" },
-      take: 1,
-    });
-
-    return NextResponse.json({
-      subscription: subscriptions[0] || null,
-    });
-  } catch (error) {
-    console.error("Get subscription error:", error);
-    return NextResponse.json(
-      { error: "Unable to fetch subscription." },
-      { status: 500 }
     );
   }
 }

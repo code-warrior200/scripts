@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useRef, useState } from "react";
+import { Button } from "./Button";
 
 type ChatMessage = {
   role: "assistant" | "user";
@@ -85,9 +86,9 @@ export function CustomerAssistant() {
               <strong>AI Customer Assistant</strong>
               <span>Online</span>
             </div>
-            <button className="assistant-icon-button" type="button" onClick={() => setIsOpen(false)} aria-label="Close assistant">
+            <Button variant="icon" type="button" onClick={() => setIsOpen(false)} aria-label="Close assistant">
               x
-            </button>
+            </Button>
           </header>
 
           <div className="assistant-messages" aria-live="polite">
@@ -101,9 +102,9 @@ export function CustomerAssistant() {
 
           <div className="assistant-prompts">
             {quickPrompts.map((prompt) => (
-              <button type="button" key={prompt} onClick={() => void sendMessage(prompt)}>
+              <Button variant="prompt" type="button" key={prompt} onClick={() => void sendMessage(prompt)}>
                 {prompt}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -115,15 +116,15 @@ export function CustomerAssistant() {
               placeholder="Ask a question..."
               aria-label="Message"
             />
-            <button className="primary" type="submit" disabled={isSending || !input.trim()}>
+            <Button variant="primary" type="submit" disabled={isSending || !input.trim()}>
               Send
-            </button>
+            </Button>
           </form>
         </section>
       ) : (
-        <button className="assistant-launcher" type="button" onClick={openAssistant} aria-label="Open customer assistant">
+        <Button variant="launcher" type="button" onClick={openAssistant} aria-label="Open customer assistant">
           AI
-        </button>
+        </Button>
       )}
     </div>
   );

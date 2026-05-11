@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { Button } from "./Button";
 
 type NotificationPreferences = {
   irrigation: boolean;
@@ -69,9 +70,9 @@ export function NotificationSettings() {
             {enabledCount} alert types enabled via {preferences.delivery}.
           </p>
         </div>
-        <button className="primary" type="button" onClick={() => setIsOpen((open) => !open)}>
+        <Button variant="primary" type="button" onClick={() => setIsOpen((open) => !open)}>
           Edit notifications
-        </button>
+        </Button>
       </div>
 
       {isOpen ? (
@@ -122,12 +123,12 @@ export function NotificationSettings() {
           {error ? <p className="form-error">{error}</p> : null}
 
           <div className="form-actions">
-            <button type="button" onClick={cancelEdit}>
+            <Button type="button" onClick={cancelEdit}>
               Cancel
-            </button>
-            <button className="primary" type="submit" disabled={isSubmitting}>
+            </Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save notifications"}
-            </button>
+            </Button>
           </div>
         </form>
       ) : null}

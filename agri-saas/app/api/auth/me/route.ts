@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../../lib/auth";
 import { prisma } from "../../../../lib/prisma";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    // Get email from query parameter (for now, will be replaced with session)
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
-
-    if (!email) {
-      return NextResponse.json(
-        { error: "Email is required." },
-        { status: 400 }
-      );
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { id: session.user.id },
       include: {
+        organization: true,
         subscriptions: {
           where: { status: "active" },
           orderBy: { createdAt: "desc" },
@@ -26,10 +23,7 @@ export async function GET(request: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -38,6 +32,8 @@ export async function GET(request: Request) {
         email: user.email,
         name: user.name,
         organization: user.organization,
+        organizationId: user.organizationId,
+        role: user.role,
       },
       subscription: user.subscriptions[0]
         ? {

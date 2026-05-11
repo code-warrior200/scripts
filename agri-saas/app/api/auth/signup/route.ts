@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
+import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
   try {
@@ -46,38 +47,42 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    });
+    const slugBase = organization
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
 
-    // Create default organization and link to user
-    const org = await prisma.organization.create({
-      data: {
-        name: organization,
-        slug: `${organization.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
-        plan: 'free',
-        maxUsers: 1,
-        maxFarms: 3,
-      },
-    });
+    const { user, org } = await prisma.$transaction(async (tx) => {
+      const createdOrg = await tx.organization.create({
+        data: {
+          name: organization,
+          slug: `${slugBase || "farm"}-${Date.now()}`,
+          plan: "free",
+          maxUsers: 1,
+          maxFarms: 3,
+        },
+      });
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { organizationId: org.id },
-    });
+      const createdUser = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role: UserRole.ADMIN,
+          organizationId: createdOrg.id,
+        },
+      });
 
-    // Create default subscription
-    await prisma.subscription.create({
-      data: {
-        plan: "free",
-        status: "active",
-        userId: user.id,
-      },
+      await tx.subscription.create({
+        data: {
+          plan: "free",
+          status: "active",
+          userId: createdUser.id,
+          organizationId: createdOrg.id,
+        },
+      });
+
+      return { user: createdUser, org: createdOrg };
     });
 
     // Return user data (excluding password)
@@ -87,13 +92,14 @@ export async function POST(request: Request) {
           id: user.id,
           email: user.email,
           name: user.name,
-          organization: user.organization,
+          organization: org,
+          organizationId: org.id,
+          role: user.role,
         },
       },
       { status: 201 }
     );
-  } catch (error) {
-    console.error("Signup error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Unable to create account." },
       { status: 500 }

@@ -19,8 +19,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({ farms });
-  } catch (error) {
-    console.error("Get farms error:", error);
+  } catch {
     return NextResponse.json({ error: "Unable to fetch farms." }, { status: 500 });
   }
 }
@@ -63,8 +62,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ farm }, { status: 201 });
-  } catch (error) {
-    console.error("Create farm error:", error);
+  } catch {
     return NextResponse.json({ error: "Unable to create farm." }, { status: 500 });
   }
 }

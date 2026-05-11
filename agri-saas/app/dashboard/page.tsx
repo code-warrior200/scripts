@@ -9,7 +9,6 @@ import {
   FiCheckCircle, 
   FiClock,
   FiTrendingUp,
-  FiDollarSign,
   FiPackage,
   FiUsers,
   FiMapPin,
@@ -54,10 +53,10 @@ const sampleInventoryAlerts = [
 ];
 
 const sampleUpcomingTasks = [
-  { id: 1, title: "Inspect irrigation system", dueDate: "May 12, 2024", priority: "high", assignee: "Noah Bennett" },
-  { id: 2, title: "Schedule potato harvest", dueDate: "May 18, 2024", priority: "urgent", assignee: "Maya Collins" },
-  { id: 3, title: "Order fertilizer supply", dueDate: "May 20, 2024", priority: "medium", assignee: "Maya Collins" },
-  { id: 4, title: "Equipment maintenance", dueDate: "May 20, 2024", priority: "normal", assignee: "John Mitchell" }
+  { id: 1, title: "Inspect irrigation system", dueDate: "May 12, 2026", priority: "high", assignee: "Noah Bennett" },
+  { id: 2, title: "Schedule potato harvest", dueDate: "May 18, 2026", priority: "urgent", assignee: "Maya Collins" },
+  { id: 3, title: "Order fertilizer supply", dueDate: "May 20, 2026", priority: "medium", assignee: "Maya Collins" },
+  { id: 4, title: "Equipment maintenance", dueDate: "May 22, 2026", priority: "normal", assignee: "John Mitchell" }
 ];
 
 const sampleRecentActivities = [
@@ -210,7 +209,7 @@ export default function DashboardPage() {
                 {sampleWeather.conditions === 'sunny' ? <FiSun /> : <FiCloud />}
               </div>
               <div className="weather-temp">
-                <span className="temp-value">{sampleWeather.temperature}°C</span>
+                <span className="temp-value">{sampleWeather.temperature} C</span>
                 <span className="temp-condition">{sampleWeather.conditions}</span>
               </div>
             </div>
@@ -268,7 +267,7 @@ export default function DashboardPage() {
           </div>
           <div className="yield-chart">
             <div className="chart-container">
-              {yieldTrends.map((item, index) => (
+              {yieldTrends.map((item) => (
                 <div key={item.month} className="chart-bar-wrapper">
                   <div className="chart-bar" style={{ height: `${(item.yield / 15) * 100}%` }}>
                     <span className="chart-value">{item.yield}t</span>

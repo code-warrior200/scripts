@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Button } from "../../../components/Button";
 import { getSampleCrops, getSampleFarms } from "../../../lib/data";
 
 type CropDetailsPageProps = {
@@ -14,16 +15,19 @@ export function generateStaticParams() {
   }));
 }
 
+function getCropById(id: string) {
+  return getSampleCrops().find((crop) => crop.id === id) ?? null;
+}
+
 export default function CropDetailsPage({ params }: CropDetailsPageProps) {
-  const crops = getSampleCrops();
-  const crop = crops.find((c) => c.id === params.id);
+  const crop = getCropById(params.id);
 
   if (!crop) {
     notFound();
   }
 
-  const farms = getSampleFarms();
-  const farm = farms.find((f) => f.name === crop.farm);
+  const farm = getSampleFarms().find((item) => item.name === crop.farm) ?? null;
+  const isHealthy = crop.health === "Healthy" || crop.health === "Stable";
 
   return (
     <div>
@@ -37,7 +41,7 @@ export default function CropDetailsPage({ params }: CropDetailsPageProps) {
             {crop.area} planted at {crop.farm}.
           </p>
         </div>
-        <span className={`status-pill ${crop.health === "Healthy" || crop.health === "Stable" ? "healthy" : "attention"}`}>
+        <span className={`status-pill ${isHealthy ? "healthy" : "attention"}`}>
           {crop.health}
         </span>
       </section>
@@ -70,9 +74,9 @@ export default function CropDetailsPage({ params }: CropDetailsPageProps) {
             <p>Current task and farm context for this crop.</p>
           </div>
           {farm ? (
-            <Link className="table-action" href={`/farms/${farm.id}`}>
+            <Button variant="table" href={`/farms/${farm.id}`}>
               View farm
-            </Link>
+            </Button>
           ) : null}
         </div>
 

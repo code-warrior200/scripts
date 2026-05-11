@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FiMail } from "react-icons/fi";
+import { Button } from "../../components/Button";
 
 export default function ForgotPasswordPage() {
   return (
@@ -28,9 +29,9 @@ export default function ForgotPasswordPage() {
           </span>
         </label>
 
-        <button className="primary auth-submit" type="submit">
+        <Button className="auth-submit" variant="primary" type="submit" fullWidth>
           Send reset link
-        </button>
+        </Button>
       </form>
 
       <p className="auth-switch">

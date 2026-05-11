@@ -1,30 +1,29 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma";
+import { NotificationType } from "@prisma/client";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const unreadOnly = searchParams.get("unreadOnly") === "true";
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required." },
-        { status: 400 }
-      );
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { searchParams } = new URL(request.url);
+    const unreadOnly = searchParams.get("unreadOnly") === "true";
 
     const notifications = await prisma.notification.findMany({
       where: {
-        userId,
+        userId: session.user.id,
         ...(unreadOnly ? { read: false } : {}),
       },
       orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json({ notifications });
-  } catch (error) {
-    console.error("Get notifications error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Unable to fetch notifications." },
       { status: 500 }
@@ -34,34 +33,42 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = (await request.json()) as {
       title?: string;
       message?: string;
       type?: string;
-      userId?: string;
+      irrigation?: boolean;
+      harvest?: boolean;
+      inventory?: boolean;
+      delivery?: string;
     };
 
-    const title = body.title?.trim();
-    const message = body.message?.trim();
-    const type = body.type?.trim() || "info";
-    const userId = body.userId;
+    const isPreferenceUpdate =
+      typeof body.irrigation === "boolean" ||
+      typeof body.harvest === "boolean" ||
+      typeof body.inventory === "boolean" ||
+      typeof body.delivery === "string";
 
-    if (!title || !message || !userId) {
+    const title = body.title?.trim() || (isPreferenceUpdate ? "Notification preferences updated" : "");
+    const message =
+      body.message?.trim() ||
+      (isPreferenceUpdate
+        ? `Alerts will be delivered via ${body.delivery || "Email"}.`
+        : "");
+    const requestedType = body.type?.trim().toUpperCase();
+    const type = requestedType && requestedType in NotificationType
+      ? (requestedType as NotificationType)
+      : NotificationType.SYSTEM;
+
+    if (!title || !message) {
       return NextResponse.json(
-        { error: "Title, message, and user ID are required." },
+        { error: "Title and message are required." },
         { status: 400 }
-      );
-    }
-
-    // Verify user exists
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found." },
-        { status: 404 }
       );
     }
 
@@ -70,13 +77,12 @@ export async function POST(request: Request) {
         title,
         message,
         type,
-        userId,
+        userId: session.user.id,
       },
     });
 
     return NextResponse.json({ notification }, { status: 201 });
-  } catch (error) {
-    console.error("Create notification error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Unable to create notification." },
       { status: 400 }

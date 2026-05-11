@@ -39,10 +39,10 @@ export async function PATCH(
       name?: string;
       region?: string;
       status?: string;
-      manager?: string;
-      area?: string;
+      address?: string;
+      totalArea?: number;
       soilType?: string;
-      lastInspection?: string;
+      irrigationType?: string;
     };
 
     // Check if farm exists
@@ -63,10 +63,10 @@ export async function PATCH(
         name: body.name?.trim(),
         region: body.region?.trim(),
         status: body.status?.trim(),
-        manager: body.manager?.trim(),
-        area: body.area?.trim(),
+        address: body.address?.trim(),
+        totalArea: body.totalArea,
         soilType: body.soilType?.trim(),
-        lastInspection: body.lastInspection?.trim(),
+        irrigationType: body.irrigationType?.trim(),
       },
       include: {
         crops: true,

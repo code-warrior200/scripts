@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import type { Farm } from "../lib/data";
+import { Button } from "./Button";
 import { FarmList } from "./FarmList";
 
 type FarmForm = {
@@ -65,9 +66,9 @@ export function FarmManager({ initialFarms }: { initialFarms: Farm[] }) {
           <h2>Active farms</h2>
           <p>Review current farm performance and crop health.</p>
         </div>
-        <button className="primary" type="button" onClick={() => setIsOpen(true)}>
+        <Button variant="primary" type="button" onClick={() => setIsOpen(true)}>
           Add new farm
-        </button>
+        </Button>
       </div>
 
       {isOpen ? (
@@ -103,12 +104,12 @@ export function FarmManager({ initialFarms }: { initialFarms: Farm[] }) {
           {error ? <p className="form-error">{error}</p> : null}
 
           <div className="form-actions">
-            <button type="button" onClick={() => setIsOpen(false)}>
+            <Button type="button" onClick={() => setIsOpen(false)}>
               Cancel
-            </button>
-            <button className="primary" type="submit" disabled={isSubmitting}>
+            </Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Adding..." : "Save farm"}
-            </button>
+            </Button>
           </div>
         </form>
       ) : null}

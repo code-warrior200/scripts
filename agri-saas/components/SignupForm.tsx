@@ -4,15 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { FiBriefcase, FiLock, FiMail, FiUser } from "react-icons/fi";
 import { useAuth } from "./AuthProvider";
+import { Button } from "./Button";
 
 export function SignupForm() {
   const router = useRouter();
   const { signup } = useAuth();
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "");
@@ -22,11 +25,17 @@ export function SignupForm() {
 
     if (!name.trim() || !organizationName.trim() || !email.trim() || password.length < 6) {
       setError("Complete all fields and use a password with at least 6 characters.");
+      setIsSubmitting(false);
       return;
     }
 
-    signup({ name, organizationName, email, password });
-    router.replace("/dashboard");
+    try {
+      await signup({ name, organizationName, email, password });
+      router.replace("/dashboard");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Unable to create account.");
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -72,9 +81,9 @@ export function SignupForm() {
 
       {error ? <p className="form-error">{error}</p> : null}
 
-      <button className="primary auth-submit" type="submit">
-        Create account
-      </button>
+      <Button className="auth-submit" variant="primary" type="submit" disabled={isSubmitting} fullWidth>
+        {isSubmitting ? "Creating account..." : "Create account"}
+      </Button>
     </form>
   );
 }

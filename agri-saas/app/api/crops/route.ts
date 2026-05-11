@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const farmId = searchParams.get("farmId");
 
-    let whereClause: any = undefined;
+    let whereClause: { farmCrops?: { some: { id: string | { in: string[] } } } } = {};
 
     if (farmId) {
       // Only allow crops for farms owned by the current user
@@ -58,8 +58,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({ crops });
-  } catch (error) {
-    console.error("Get crops error:", error);
+  } catch {
     return NextResponse.json({ error: "Unable to fetch crops." }, { status: 500 });
   }
 }
@@ -138,8 +137,7 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch (error) {
-    console.error("Create crop error:", error);
+  } catch {
     return NextResponse.json({ error: "Unable to create crop." }, { status: 500 });
   }
 }

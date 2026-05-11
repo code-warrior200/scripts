@@ -1,16 +1,17 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { Button } from "./Button";
 
 const plans = [
-  { name: "Starter", price: "$29/mo", description: "Core farm and crop tracking." },
-  { name: "Premium", price: "$79/mo", description: "Analytics, AI assistant, and team workflows." },
-  { name: "Enterprise", price: "Custom", description: "Multi-region operations and priority support." },
+  { id: "free", name: "Starter", price: "$0/mo", description: "Core farm and crop tracking." },
+  { id: "pro", name: "Premium", price: "$79/mo", description: "Analytics, AI assistant, and team workflows." },
+  { id: "enterprise", name: "Enterprise", price: "Custom", description: "Multi-region operations and priority support." },
 ];
 
 export function SubscriptionManager() {
-  const [currentPlan, setCurrentPlan] = useState("Premium");
-  const [selectedPlan, setSelectedPlan] = useState("Premium");
+  const [currentPlan, setCurrentPlan] = useState("pro");
+  const [selectedPlan, setSelectedPlan] = useState("pro");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -49,23 +50,23 @@ export function SubscriptionManager() {
       <div className="subscription-summary">
         <div>
           <strong>Subscription</strong>
-          <p>Current plan: {currentPlan}</p>
+          <p>Current plan: {plans.find((plan) => plan.id === currentPlan)?.name ?? currentPlan}</p>
         </div>
-        <button className="primary" type="button" onClick={() => setIsOpen((open) => !open)}>
+        <Button variant="primary" type="button" onClick={() => setIsOpen((open) => !open)}>
           Manage subscription
-        </button>
+        </Button>
       </div>
 
       {isOpen ? (
         <form className="subscription-form" onSubmit={handleSubmit}>
           <div className="plan-grid">
             {plans.map((plan) => (
-              <label className={`plan-option${selectedPlan === plan.name ? " selected" : ""}`} key={plan.name}>
+              <label className={`plan-option${selectedPlan === plan.id ? " selected" : ""}`} key={plan.id}>
                 <input
                   type="radio"
                   name="plan"
-                  value={plan.name}
-                  checked={selectedPlan === plan.name}
+                  value={plan.id}
+                  checked={selectedPlan === plan.id}
                   onChange={(event) => setSelectedPlan(event.target.value)}
                 />
                 <span>
@@ -80,12 +81,12 @@ export function SubscriptionManager() {
           {error ? <p className="form-error">{error}</p> : null}
 
           <div className="form-actions">
-            <button type="button" onClick={() => setIsOpen(false)}>
+            <Button type="button" onClick={() => setIsOpen(false)}>
               Cancel
-            </button>
-            <button className="primary" type="submit" disabled={isSubmitting || selectedPlan === currentPlan}>
+            </Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting || selectedPlan === currentPlan}>
               {isSubmitting ? "Updating..." : "Update plan"}
-            </button>
+            </Button>
           </div>
         </form>
       ) : null}

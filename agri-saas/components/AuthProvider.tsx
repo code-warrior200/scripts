@@ -86,14 +86,17 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, organizationName, email, password }),
+          body: JSON.stringify({ name, organization: organizationName, email, password }),
         });
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "Signup failed");
         }
         // Sign in after signup
-        await signIn("credentials", { email, password, redirect: false });
+        const result = await signIn("credentials", { email, password, redirect: false });
+        if (result?.error) {
+          throw new Error(result.error);
+        }
       },
       logout: () => signOut({ redirect: false }),
     }),
