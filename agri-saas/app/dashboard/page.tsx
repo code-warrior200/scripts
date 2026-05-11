@@ -1,5 +1,6 @@
 import { AnalyticsCharts } from "../../components/AnalyticsCharts";
-import { getAnalytics, getFarms, getCrops } from "../../lib/data";
+import { StatCard } from "../../components/StatCard";
+import { getAnalytics, getCrops, getFarms } from "../../lib/data";
 
 export default function DashboardPage() {
   const farms = getFarms();
@@ -15,18 +16,9 @@ export default function DashboardPage() {
 
       <section className="section">
         <div className="stat-grid">
-          <div className="card">
-            <strong>Farms</strong>
-            <div>{farms.length}</div>
-          </div>
-          <div className="card">
-            <strong>Crops</strong>
-            <div>{crops.length}</div>
-          </div>
-          <div className="card">
-            <strong>Subscriptions</strong>
-            <div>Premium</div>
-          </div>
+          <StatCard label="Farms" value={farms.length} />
+          <StatCard label="Crops" value={crops.length} />
+          <StatCard label="Subscription" value="Premium" />
         </div>
       </section>
 

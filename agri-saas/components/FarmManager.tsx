@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import type { Farm } from "../lib/data";
 import { FarmList } from "./FarmList";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 
 const plans = [
   { name: "Starter", price: "$29/mo", description: "Core farm and crop tracking." },
