@@ -1,7 +1,27 @@
+# Dependencies
 node_modules
+
+# Next.js
 .next
 out
+
+# OS
 .DS_Store
+
+# Environment variables
 .env*
+!.env.example
+
+# Vercel
 .vercel
+
+# Logs
 .next-dev*.log
+
+# Prisma
+/lib/generated/prisma
+prisma/migrations
+
+# Build
+dist
+build

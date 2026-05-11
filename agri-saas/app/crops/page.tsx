@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getCrops } from "../../lib/data";
+import { getSampleCrops } from "../../lib/data";
 
 export default function CropsPage() {
-  const crops = getCrops();
+  const crops = getSampleCrops();
 
   return (
     <div>

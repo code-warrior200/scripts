@@ -1,3 +1,17 @@
+/**
+ * This file is kept for backward compatibility and type definitions.
+ * The actual data operations are now handled by Prisma ORM.
+ * 
+ * For database operations, use the API routes:
+ * - /api/farms - Farm CRUD operations
+ * - /api/crops - Crop CRUD operations
+ * - /api/auth - Authentication operations
+ * - /api/subscribe - Subscription management
+ * - /api/notifications - Notification management
+ * 
+ * @deprecated Use API routes instead of direct data access
+ */
+
 export type Farm = {
   id: string;
   name: string;
@@ -33,7 +47,8 @@ export type CropArea = {
   acres: number;
 };
 
-const farms: Farm[] = [
+// Sample data for development/testing (when database is not available)
+const sampleFarms: Farm[] = [
   {
     id: "farm-1",
     name: "Sunny Acres",
@@ -69,7 +84,7 @@ const farms: Farm[] = [
   },
 ];
 
-const crops: Crop[] = [
+const sampleCrops: Crop[] = [
   {
     id: "crop-1",
     name: "Corn",
@@ -106,7 +121,7 @@ const crops: Crop[] = [
     harvestWindow: "Jun 20 - Jul 2, 2026",
     health: "Needs attention",
   },
-    {
+  {
     id: "crop-4",
     name: "Potatoes",
     farm: "Riverbend Ranch",
@@ -117,77 +132,56 @@ const crops: Crop[] = [
     plantingDate: "Feb 10, 2026",
     harvestWindow: "May 22 - Jun 8, 2026",
     health: "Harvest ready",
-    },
+  },
 ];
 
 const yieldTrends: YieldTrend[] = [
-    { month: "Jan", yield: 8.4 },
-    { month: "Feb", yield: 9.1 },
-    { month: "Mar", yield: 9.8 },
-    { month: "Apr", yield: 10.6 },
-    { month: "May", yield: 11.4 },
-    { month: "Jun", yield: 12.4 },
+  { month: "Jan", yield: 8.4 },
+  { month: "Feb", yield: 9.1 },
+  { month: "Mar", yield: 9.8 },
+  { month: "Apr", yield: 10.6 },
+  { month: "May", yield: 11.4 },
+  { month: "Jun", yield: 12.4 },
 ];
 
-const cropAreas: CropArea[] = crops.map((crop) => ({
-    crop: crop.name,
-    acres: Number.parseInt(crop.area, 10),
+const cropAreas: CropArea[] = sampleCrops.map((crop) => ({
+  crop: crop.name,
+  acres: Number.parseInt(crop.area, 10),
 }));
 
-export function getFarms() {
-    return farms;
+// Fallback functions for development without database
+export function getSampleFarms() {
+  return sampleFarms;
 }
 
-export function getFarmById(id: string) {
-    return farms.find((farm) => farm.id === id);
+export function getSampleCrops() {
+  return sampleCrops;
 }
 
-export function addFarm(farm: Omit<Farm, "id" | "manager" | "area" | "soilType" | "lastInspection">) {
-    const nextFarm = {
-    ...farm,
-    id: `farm-${Date.now()}`,
-    manager: "Unassigned",
-    area: "Not set",
-    soilType: "Not set",
-    lastInspection: "Not inspected",
-    };
-
-    farms.push(nextFarm);
-    return nextFarm;
+export function getYieldTrends() {
+  return yieldTrends;
 }
 
-export function getCrops() {
-    return crops;
+export function getCropAreas() {
+  return cropAreas;
 }
 
-export function getCropById(id: string) {
-    return crops.find((crop) => crop.id === id);
-}
-
-export function getCropsByFarm(farmName: string) {
-    return crops.filter((crop) => crop.farm === farmName);
-}
-
-export function getFarmByName(farmName: string) {
-    return farms.find((farm) => farm.name === farmName);
-}
-
-export function getStats() {
-    return [
-    { label: "Farms", value: farms.length },
-    { label: "Crops", value: crops.length },
+export function getSampleStats() {
+  return [
+    { label: "Farms", value: sampleFarms.length },
+    { label: "Crops", value: sampleCrops.length },
     { label: "Estimated yield", value: "12.4 t" },
     { label: "Team members", value: 5 },
-    ];
+  ];
 }
 
-export function getAnalytics() {
-    return {
+export function getSampleAnalytics() {
+  return {
     yieldTrends,
     cropAreas,
     farmHealth: [
-        { label: "Healthy", value: farms.filter((farm) => farm.status === "Healthy").length },
-        { label: "Needs attention", value: farms.filter((farm) => farm.status !== "Healthy").length },
+      { label: "Healthy", value: sampleFarms.filter((farm) => farm.status === "Healthy").length },
+      { label: "Needs attention", value: sampleFarms.filter((farm) => farm.status !== "Healthy").length },
     ],
-    };
+  };
 }

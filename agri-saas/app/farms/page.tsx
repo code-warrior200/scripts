@@ -1,8 +1,8 @@
-import { getFarms } from "../../lib/data";
+import { getSampleFarms } from "../../lib/data";
 import { FarmManager } from "../../components/FarmManager";
 
 export default function FarmsPage() {
-  const farms = getFarms();
+  const farms = getSampleFarms();
 
   return (
     <div>

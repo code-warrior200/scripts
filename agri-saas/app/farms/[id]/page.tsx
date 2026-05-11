@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCropsByFarm, getFarmById, getFarms } from "../../../lib/data";
+import { getSampleFarms, getSampleCrops } from "../../../lib/data";
 
 type FarmDetailsPageProps = {
   params: {
@@ -9,19 +9,21 @@ type FarmDetailsPageProps = {
 };
 
 export function generateStaticParams() {
-  return getFarms().map((farm) => ({
+  return getSampleFarms().map((farm) => ({
     id: farm.id,
   }));
 }
 
 export default function FarmDetailsPage({ params }: FarmDetailsPageProps) {
-  const farm = getFarmById(params.id);
+  const farms = getSampleFarms();
+  const farm = farms.find((f) => f.id === params.id);
 
   if (!farm) {
     notFound();
   }
 
-  const relatedCrops = getCropsByFarm(farm.name);
+  const allCrops = getSampleCrops();
+  const relatedCrops = allCrops.filter((crop) => crop.farm === farm.name);
 
   return (
     <div>

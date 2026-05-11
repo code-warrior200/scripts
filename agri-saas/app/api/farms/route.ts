@@ -1,32 +1,70 @@
 import { NextResponse } from "next/server";
-import { addFarm, getFarms } from "../../../lib/data";
+import { prisma } from "../../../lib/prisma";
+import { authOptions } from "../../../lib/auth";
+import { getServerSession } from "next-auth/next";
 
-export async function GET() {
-  return NextResponse.json({ farms: getFarms() });
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const farms = await prisma.farm.findMany({
+      where: { ownerId: session.user.id },
+      include: {
+        crops: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ farms });
+  } catch (error) {
+    console.error("Get farms error:", error);
+    return NextResponse.json({ error: "Unable to fetch farms." }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id || !session.user.organizationId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = (await request.json()) as {
       name?: string;
       region?: string;
       status?: string;
-      crops?: string[];
     };
 
     const name = body.name?.trim();
     const region = body.region?.trim();
-    const status = body.status?.trim() || "Healthy";
-    const crops = Array.isArray(body.crops) ? body.crops.map((crop) => crop.trim()).filter(Boolean) : [];
+    const status = body.status?.trim() || "active";
 
     if (!name || !region) {
-      return NextResponse.json({ error: "Farm name and region are required." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Farm name and region are required." },
+        { status: 400 }
+      );
     }
 
-    const farm = addFarm({ name, region, status, crops });
+    const farm = await prisma.farm.create({
+      data: {
+        name,
+        region,
+        status,
+        organizationId: session.user.organizationId,
+        ownerId: session.user.id,
+      },
+      include: {
+        crops: true,
+      },
+    });
 
     return NextResponse.json({ farm }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Unable to add farm." }, { status: 400 });
+  } catch (error) {
+    console.error("Create farm error:", error);
+    return NextResponse.json({ error: "Unable to create farm." }, { status: 500 });
   }
 }

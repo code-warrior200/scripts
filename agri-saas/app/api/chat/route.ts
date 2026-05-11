@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCrops, getFarms } from "../../../lib/data";
+import { getSampleFarms, getSampleCrops } from "../../../lib/data";
 
 type ChatMessage = {
   role?: string;
@@ -11,9 +11,9 @@ function normalizeMessage(value: unknown) {
 }
 
 function getAssistantReply(message: string) {
-  const farms = getFarms();
-  const crops = getCrops();
-  const attentionFarms = farms.filter((farm) => farm.status.toLowerCase() !== "healthy");
+  const farms = getSampleFarms();
+  const crops = getSampleCrops();
+  const attentionFarms = farms.filter((farm: { status: string }) => farm.status.toLowerCase() !== "healthy");
 
   if (!message) {
     return "Ask me about farm status, crop actions, subscriptions, or where to find something in AgriSaaS.";
@@ -24,17 +24,17 @@ function getAssistantReply(message: string) {
       return "All farms are marked healthy. Keep monitoring moisture, irrigation, and upcoming harvest work from the Farms and Crops pages.";
     }
 
-    const summary = attentionFarms.map((farm) => `${farm.name} in ${farm.region}: ${farm.status}`).join("; ");
+    const summary = attentionFarms.map((farm: { name: string; region: string; status: string }) => `${farm.name} in ${farm.region}: ${farm.status}`).join("; ");
     return `These farms need attention: ${summary}. Start with the Farms page, then check crop-level next actions for the affected fields.`;
   }
 
   if (message.includes("crop") || message.includes("action") || message.includes("task") || message.includes("harvest")) {
-    const summary = crops.map((crop) => `${crop.name} at ${crop.farm}: ${crop.nextAction}`).join("; ");
+    const summary = crops.map((crop: { name: string; farm: string; nextAction: string }) => `${crop.name} at ${crop.farm}: ${crop.nextAction}`).join("; ");
     return `Current crop actions are: ${summary}. Use the Crops page to review acreage and prioritize work by farm.`;
   }
 
   if (message.includes("farm") || message.includes("location") || message.includes("region")) {
-    const summary = farms.map((farm) => `${farm.name} (${farm.region}, ${farm.crops.length} crops, ${farm.status})`).join("; ");
+    const summary = farms.map((farm: { name: string; region: string; crops: string[]; status: string }) => `${farm.name} (${farm.region}, ${farm.crops.length} crops, ${farm.status})`).join("; ");
     return `You have ${farms.length} farms in AgriSaaS: ${summary}.`;
   }
 

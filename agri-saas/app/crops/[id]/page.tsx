@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCropById, getCrops, getFarmByName } from "../../../lib/data";
+import { getSampleCrops, getSampleFarms } from "../../../lib/data";
 
 type CropDetailsPageProps = {
   params: {
@@ -9,19 +9,21 @@ type CropDetailsPageProps = {
 };
 
 export function generateStaticParams() {
-  return getCrops().map((crop) => ({
+  return getSampleCrops().map((crop) => ({
     id: crop.id,
   }));
 }
 
 export default function CropDetailsPage({ params }: CropDetailsPageProps) {
-  const crop = getCropById(params.id);
+  const crops = getSampleCrops();
+  const crop = crops.find((c) => c.id === params.id);
 
   if (!crop) {
     notFound();
   }
 
-  const farm = getFarmByName(crop.farm);
+  const farms = getSampleFarms();
+  const farm = farms.find((f) => f.name === crop.farm);
 
   return (
     <div>

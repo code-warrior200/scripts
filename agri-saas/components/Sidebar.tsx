@@ -3,14 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { FiBarChart2, FiChevronLeft, FiChevronRight, FiGrid, FiHelpCircle, FiHome, FiLogOut, FiMap, FiSettings } from "react-icons/fi";
+import { 
+  FiBarChart2, 
+  FiChevronLeft, 
+  FiChevronRight, 
+  FiGrid, 
+  FiHelpCircle, 
+  FiHome, 
+  FiLogOut, 
+  FiMap, 
+  FiSettings,
+  FiPackage,
+  FiUsers,
+  FiCheckSquare,
+  FiBell,
+  FiTool,
+  FiDollarSign
+} from "react-icons/fi";
 import { useAuth } from "./AuthProvider";
 
 const navItems = [
-  { label: "Home", href: "/", icon: FiHome, description: "Overview" },
-  { label: "Dashboard", href: "/dashboard", icon: FiBarChart2, description: "Metrics" },
-  { label: "Farms", href: "/farms", icon: FiMap, description: "Locations" },
-  { label: "Crops", href: "/crops", icon: FiGrid, description: "Field work" },
+  { label: "Dashboard", href: "/dashboard", icon: FiHome, description: "Overview" },
+  { label: "Farms", href: "/farms", icon: FiMap, description: "Farm management" },
+  { label: "Crops", href: "/crops", icon: FiGrid, description: "Crop tracking" },
+  { label: "Tasks", href: "/tasks", icon: FiCheckSquare, description: "Task management" },
+  { label: "Inventory", href: "/inventory", icon: FiPackage, description: "Resources" },
+  { label: "Equipment", href: "/equipment", icon: FiTool, description: "Machinery" },
+  { label: "Analytics", href: "/analytics", icon: FiBarChart2, description: "Reports" },
+  { label: "Team", href: "/team", icon: FiUsers, description: "Workforce" },
+  { label: "Subscription", href: "/subscription", icon: FiDollarSign, description: "Billing" },
   { label: "Settings", href: "/settings", icon: FiSettings, description: "Account" },
 ];
 
@@ -24,11 +45,11 @@ export function Sidebar() {
       <div className="sidebar-top">
         <div className="sidebar-brand">
           <div className="sidebar-logo" aria-hidden="true">
-            A
+            RP
           </div>
           <div className="sidebar-brand-copy">
-            <div className="sidebar-title">AgriSaaS</div>
-            <div className="sidebar-subtitle">Farm operations platform</div>
+            <div className="sidebar-title">Rampart Power</div>
+            <div className="sidebar-subtitle">Agricultural SaaS</div>
           </div>
         </div>
 
@@ -44,10 +65,10 @@ export function Sidebar() {
       </div>
 
       <nav className="sidebar-nav" aria-label="Primary navigation">
-        <div className="nav-heading">Workspace</div>
+        <div className="nav-heading">Main Menu</div>
         <ul className="nav-list">
           {navItems.map((item) => {
-            const isActive = item.href === "/" ? pathname === item.href : pathname.startsWith(item.href);
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
 
             return (
@@ -71,6 +92,22 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
+
+      {/* Notifications section */}
+      <div className="sidebar-section">
+        <Link
+          className="nav-link"
+          href="/notifications"
+          title={isCollapsed ? "Notifications" : undefined}
+        >
+          <span className="nav-icon" aria-hidden="true">
+            <FiBell />
+          </span>
+          <span className="nav-copy">
+            <span className="nav-label">Notifications</span>
+          </span>
+        </Link>
+      </div>
 
       <div className="sidebar-support">
         <FiHelpCircle className="sidebar-support-icon" aria-hidden="true" />

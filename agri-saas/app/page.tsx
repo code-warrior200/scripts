@@ -1,10 +1,10 @@
-import { getFarms, getStats } from "../lib/data";
+import { getSampleFarms, getSampleStats } from "../lib/data";
 import { StatCard } from "../components/StatCard";
 import { FarmManager } from "../components/FarmManager";
 
 export default function HomePage() {
-  const farms = getFarms();
-  const stats = getStats();
+  const farms = getSampleFarms();
+  const stats = getSampleStats();
 
   return (
     <div>

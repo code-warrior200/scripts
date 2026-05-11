@@ -1,0 +1,3 @@
+- [x] Fix authz/data integrity in app/api/farms/route.ts (derive userId from NextAuth session; reject blank/foreign userId; return 500 on unexpected errors)
+- [x] Fix authz/data integrity in app/api/crops/route.ts (stop trusting userId/farmId from client; enforce ownership checks; return 500 on unexpected errors)
+- [ ] Run `npm run build` (typecheck + next build) and fix any TypeScript issues

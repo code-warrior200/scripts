@@ -16,16 +16,16 @@ export function SignupForm() {
 
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "");
-    const organization = String(formData.get("organization") ?? "");
+    const organizationName = String(formData.get("organization") ?? "");
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
-    if (!name.trim() || !organization.trim() || !email.trim() || password.length < 6) {
+    if (!name.trim() || !organizationName.trim() || !email.trim() || password.length < 6) {
       setError("Complete all fields and use a password with at least 6 characters.");
       return;
     }
 
-    signup({ name, organization, email, password });
+    signup({ name, organizationName, email, password });
     router.replace("/dashboard");
   }
 

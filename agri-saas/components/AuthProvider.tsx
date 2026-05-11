@@ -1,120 +1,104 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { SessionProvider, useSession, signIn, signOut } from "next-auth/react";
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type AuthUser = {
-  name: string;
-  email: string;
-  organization?: string;
-};
+// Re-export NextAuth hooks and functions
+export { useSession, signIn, signOut } from "next-auth/react";
 
-type LoginInput = {
-  email: string;
-  password: string;
-};
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-type SignupInput = LoginInput & {
-  name: string;
-  organization: string;
-};
+export function AuthProvider({ children }: AuthProviderProps) {
+  return (
+    <SessionProvider>
+      <AuthContextProvider>{children}</AuthContextProvider>
+    </SessionProvider>
+  );
+}
+
+// Extended user type with role and organization
+export interface AuthUser {
+  name: string | null;
+  email: string | null;
+  image?: string | null;
+  id?: string;
+  role?: string;
+  organizationId?: string | null;
+}
 
 type AuthContextValue = {
   user: AuthUser | null;
   isReady: boolean;
   isAuthenticated: boolean;
-  login: (input: LoginInput) => void;
-  signup: (input: SignupInput) => void;
+  login: (input: { email: string; password: string }) => Promise<void>;
+  signup: (input: { name: string; organizationName?: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
 };
 
-const AUTH_STORAGE_KEY = "agri-saas-auth-user";
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function getStoredUser() {
-  if (typeof window === "undefined") {
-    return null;
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthContext.Provider");
   }
-
-  const stored = window.localStorage.getItem(AUTH_STORAGE_KEY);
-
-  if (!stored) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(stored) as AuthUser;
-  } catch {
-    window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    return null;
-  }
+  return context;
 }
 
-function persistUser(user: AuthUser) {
-  window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-}
-
-function deriveNameFromEmail(email: string) {
-  const name = email.split("@")[0]?.replace(/[._-]+/g, " ").trim();
-
-  return name ? name.replace(/\b\w/g, (letter) => letter.toUpperCase()) : "Farm Manager";
-}
-
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthContextProvider({ children }: { children: ReactNode }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    setUser(getStoredUser());
-    setIsReady(true);
-  }, []);
+    if (status === "authenticated" && session?.user) {
+      setUser({
+        name: session.user.name ?? null,
+        email: session.user.email ?? null,
+        image: session.user.image ?? null,
+        id: session.user.id,
+        role: (session.user as any).role,
+        organizationId: (session.user as any).organizationId,
+      });
+    } else if (status === "unauthenticated") {
+      setUser(null);
+    }
+    if (status !== "loading") {
+      setIsReady(true);
+    }
+  }, [session, status]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       isReady,
-      isAuthenticated: Boolean(user),
-      login: ({ email }) => {
-        const normalizedEmail = email.trim().toLowerCase();
-        const nextUser = getStoredUser() ?? {
-          email: normalizedEmail,
-          name: deriveNameFromEmail(normalizedEmail),
-        };
-
-        const normalizedUser = {
-          ...nextUser,
-          email: normalizedEmail,
-        };
-
-        persistUser(normalizedUser);
-        setUser(normalizedUser);
+      isAuthenticated: !!user,
+      login: async ({ email, password }: { email: string; password: string }) => {
+        const result = await signIn("credentials", { email, password, redirect: false });
+        if (result?.error) {
+          throw new Error(result.error);
+        }
       },
-      signup: ({ email, name, organization }) => {
-        const nextUser = {
-          email: email.trim().toLowerCase(),
-          name: name.trim(),
-          organization: organization.trim(),
-        };
-
-        persistUser(nextUser);
-        setUser(nextUser);
+      signup: async ({ name, organizationName, email, password }: { name: string; organizationName?: string; email: string; password: string }) => {
+        // Create user via API
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, organizationName, email, password }),
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Signup failed");
+        }
+        // Sign in after signup
+        await signIn("credentials", { email, password, redirect: false });
       },
-      logout: () => {
-        window.localStorage.removeItem(AUTH_STORAGE_KEY);
-        setUser(null);
-      },
+      logout: () => signOut({ redirect: false }),
     }),
-    [isReady, user],
+    [user, isReady]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
-  return context;
 }
